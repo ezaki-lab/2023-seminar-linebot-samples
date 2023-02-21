@@ -21,9 +21,8 @@ line_id = ""
 def home():
     return {"message": "こんにちは、世界"}
 
+
 # /image.png にGETリクエストが来たときに呼ばれる関数
-
-
 @app.get("/image.png")
 def image():
     return FileResponse("image.png")
