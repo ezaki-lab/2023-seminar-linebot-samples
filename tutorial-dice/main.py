@@ -1,4 +1,5 @@
 import os
+import random as rand
 
 from fastapi import FastAPI, Header, HTTPException, Request
 from linebot import LineBotApi, WebhookHandler
@@ -41,8 +42,17 @@ def handle_message(event):
     # 受け取ったメッセージ
     message = event.message.text
 
+    res_message = ""
+
+    if message == "サイコロ":
+        # サイコロを振る (1~6の中でランダムな値を出す)
+        dice = rand.randint(1, 6)
+        res_message = "サイコロの目は" + str(dice) + "です！"
+    else:
+        res_message = "?"
+
     # 返信する (リプライトークンを使用してテキストで返信する)
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=message)
+        TextSendMessage(text=res_message)
     )

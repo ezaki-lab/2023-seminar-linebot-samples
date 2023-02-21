@@ -1,9 +1,10 @@
 import os
 
 from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi.responses import FileResponse
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, ImageSendMessage
 
 # FastAPIのインスタンス
 app = FastAPI()
@@ -12,11 +13,20 @@ app = FastAPI()
 line_bot_api = LineBotApi(os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 handler = WebhookHandler(os.environ["LINE_CHANNEL_SECRET"])
 
+line_id = ""
+
 
 # / にGETリクエストが来たときに呼ばれる関数
 @app.get("/")
 def home():
     return {"message": "こんにちは、世界"}
+
+# /image.png にGETリクエストが来たときに呼ばれる関数
+
+
+@app.get("/image.png")
+def image():
+    return FileResponse("image.png")
 
 
 # /callback にPOSTリクエストが来たときに呼ばれる関数
@@ -41,8 +51,18 @@ def handle_message(event):
     # 受け取ったメッセージ
     message = event.message.text
 
-    # 返信する (リプライトークンを使用してテキストで返信する)
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=message)
-    )
+    if message == "画像":
+        # 画像を送信
+        line_bot_api.reply_message(
+            event.reply_token,
+            ImageSendMessage(
+                original_content_url="https://アプリ名.onrender.com/image.png",
+                preview_image_url="https://アプリ名.onrender.com/image.png"
+            )
+        )
+
+    else:
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text="?")
+        )

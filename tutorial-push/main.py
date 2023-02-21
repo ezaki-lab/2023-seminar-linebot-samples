@@ -12,11 +12,19 @@ app = FastAPI()
 line_bot_api = LineBotApi(os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 handler = WebhookHandler(os.environ["LINE_CHANNEL_SECRET"])
 
+line_id = ""
+
 
 # / にGETリクエストが来たときに呼ばれる関数
 @app.get("/")
 def home():
-    return {"message": "こんにちは、世界"}
+    message = "こんにちは！"
+
+    # プッシュメッセージを送る
+    line_bot_api.push_message(
+        line_id,
+        TextSendMessage(text=message)
+    )
 
 
 # /callback にPOSTリクエストが来たときに呼ばれる関数
@@ -41,8 +49,14 @@ def handle_message(event):
     # 受け取ったメッセージ
     message = event.message.text
 
+    # プロフィールを読み込み、IDを取得
+    profile = line_bot_api.get_profile(event.source.user_id)
+
+    global line_id
+    line_id = profile.user_id
+
     # 返信する (リプライトークンを使用してテキストで返信する)
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=message)
+        TextSendMessage(text="hey")
     )

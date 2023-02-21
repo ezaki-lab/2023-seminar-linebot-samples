@@ -41,8 +41,18 @@ def handle_message(event):
     # 受け取ったメッセージ
     message = event.message.text
 
+    # 返信するメッセージ
+    res_message = ""
+
+    if message == "こんにちは":
+        res_message = "こんにちは！"
+    elif message == "ありがとう":
+        res_message = "どういたしまして！"
+    else:
+        res_message = "このメッセージは知らないな"
+
     # 返信する (リプライトークンを使用してテキストで返信する)
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=message)
+        TextSendMessage(text=res_message)
     )
